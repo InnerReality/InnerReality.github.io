@@ -1,71 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="system-ui, -apple-system, sans-serif">
   <defs>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b"/>
+      <stop offset="100%" style="stop-color:#0f172a"/>
+    </linearGradient>
+    <linearGradient id="serverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#475569"/>
+      <stop offset="100%" style="stop-color:#334155"/>
+    </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-opacity="0.2"/>
     </filter>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    <marker id="arrow" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#22c55e"/>
     </marker>
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="400" fill="#f8fafc" rx="12"/>
+  <rect width="800" height="300" fill="#f8fafc" rx="16"/>
 
-  <!-- Row 1: Left to Right (y=115) -->
-  <ellipse cx="80" cy="115" rx="50" ry="25" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#shadow)"/>
-  <text x="80" y="120" text-anchor="middle" fill="#166534" font-size="14" font-weight="600">Start</text>
+  <!-- Laptop -->
+  <g transform="translate(200, 90)" filter="url(#shadow)">
+    <rect x="0" y="0" width="140" height="95" rx="5" fill="url(#screenGrad)"/>
+    <rect x="5" y="5" width="130" height="80" rx="3" fill="#0f172a"/>
+    <text x="12" y="24" fill="#22c55e" font-size="9" font-family="monospace">$ ssh user@server</text>
+    <text x="12" y="38" fill="#94a3b8" font-size="8" font-family="monospace">Connecting...</text>
+    <text x="12" y="52" fill="#22c55e" font-size="8" font-family="monospace">Welcome to Debian!</text>
+    <text x="12" y="66" fill="#94a3b8" font-size="9" font-family="monospace">user@server:~$</text>
+    <rect x="112" y="58" width="7" height="10" fill="#22c55e" opacity="0.8"/>
+    <rect x="-15" y="95" width="170" height="10" rx="3" fill="#94a3b8"/>
+    <rect x="25" y="105" width="90" height="5" rx="2" fill="#cbd5e1"/>
+  </g>
 
-  <line x1="130" y1="115" x2="165" y2="115" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- SSH Arrow -->
+  <path d="M 360 150 L 470 150" stroke="#22c55e" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="400" y="135" text-anchor="middle" fill="#16a34a" font-size="14" font-weight="700">SSH</text>
+  <text x="405" y="178" text-anchor="middle" fill="#475569" font-size="13">Port 22</text>
 
-  <rect x="165" y="90" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2" filter="url(#shadow)"/>
-  <text x="225" y="120" text-anchor="middle" fill="#1e40af" font-size="13" font-weight="600">Set Root Pw</text>
-
-  <line x1="285" y1="115" x2="320" y2="115" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="320" y="90" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2" filter="url(#shadow)"/>
-  <text x="380" y="120" text-anchor="middle" fill="#1e40af" font-size="13" font-weight="600">Install SSH</text>
-
-  <line x1="440" y1="115" x2="475" y2="115" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="475" y="90" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2" filter="url(#shadow)"/>
-  <text x="535" y="120" text-anchor="middle" fill="#1e40af" font-size="13" font-weight="600">Enable Svc</text>
-
-  <!-- Curve Row1 to Row2 -->
-  <path d="M 595 115 Q 630 115, 630 150 Q 630 185, 595 185" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-
-  <!-- Row 2: Right to Left (y=185) -->
-  <rect x="475" y="160" width="120" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2" filter="url(#shadow)"/>
-  <text x="535" y="190" text-anchor="middle" fill="#1e40af" font-size="13" font-weight="600">Connect</text>
-
-  <line x1="475" y1="185" x2="440" y2="185" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="320" y="160" width="120" height="50" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2" filter="url(#shadow)"/>
-  <text x="380" y="190" text-anchor="middle" fill="#92400e" font-size="13" font-weight="600">Setup Sudo</text>
-
-  <line x1="320" y1="185" x2="285" y2="185" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="165" y="160" width="120" height="50" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2" filter="url(#shadow)"/>
-  <text x="225" y="190" text-anchor="middle" fill="#9d174d" font-size="13" font-weight="600">Gen SSH Keys</text>
-
-  <!-- Curve Row2 to Row3 -->
-  <path d="M 165 185 Q 130 185, 130 220 Q 130 255, 165 255" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-
-  <!-- Row 3: Left to Right (y=255) -->
-  <rect x="165" y="230" width="120" height="50" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2" filter="url(#shadow)"/>
-  <text x="225" y="260" text-anchor="middle" fill="#9d174d" font-size="13" font-weight="600">Edit Config</text>
-
-  <line x1="285" y1="255" x2="320" y2="255" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="320" y="230" width="120" height="50" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2" filter="url(#shadow)"/>
-  <text x="380" y="260" text-anchor="middle" fill="#9d174d" font-size="13" font-weight="600">Apply Key</text>
-
-  <line x1="440" y1="255" x2="475" y2="255" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <rect x="475" y="230" width="120" height="50" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2" filter="url(#shadow)"/>
-  <text x="535" y="260" text-anchor="middle" fill="#9d174d" font-size="13" font-weight="600">Test Conn</text>
-
-  <line x1="595" y1="255" x2="630" y2="255" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-  <ellipse cx="680" cy="255" rx="45" ry="25" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#shadow)"/>
-  <text x="680" y="260" text-anchor="middle" fill="#166534" font-size="14" font-weight="600">Done</text>
+  <!-- Server -->
+  <g transform="translate(480, 90)" filter="url(#shadow)">
+    <rect x="0" y="0" width="120" height="110" rx="6" fill="url(#serverGrad)"/>
+    <rect x="6" y="6" width="108" height="22" rx="3" fill="#1e293b"/>
+    <circle cx="18" cy="17" r="5" fill="#22c55e"/>
+    <circle cx="33" cy="17" r="5" fill="#22c55e"/>
+    <rect x="50" y="12" width="58" height="10" rx="2" fill="#0f172a"/>
+    <rect x="6" y="34" width="108" height="14" rx="2" fill="#1e293b"/>
+    <rect x="6" y="52" width="108" height="14" rx="2" fill="#1e293b"/>
+    <rect x="6" y="70" width="108" height="14" rx="2" fill="#1e293b"/>
+    <circle cx="100" cy="41" r="3" fill="#22c55e"/>
+    <circle cx="100" cy="59" r="3" fill="#22c55e"/>
+    <circle cx="100" cy="77" r="3" fill="#eab308"/>
+    <text x="60" y="100" text-anchor="middle" fill="#94a3b8" font-size="12">Debian Server</text>
+  </g>
 </svg>
