@@ -62,14 +62,14 @@
             <div
               class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral to-transparent mix-blend-normal dark:hidden"></div>
             <div
-              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral to-neutral-50 mix-blend-normal dark:hidden"></div>
+              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral to-neutral opacity-30 mix-blend-normal dark:hidden"></div>
             <!-- two gradients go from bottom to top, stack on each other and create nonlinear effect. mix-blend-normal is the default blend mode — it just means "don't do anything special, render normally."-->
             {{ end }}
             {{ if .Site.Params.homepage.layoutBackgroundBlurDark | default false }}
             <div
               class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral-800 to-transparent mix-blend-normal hidden dark:block"></div>
             <div
-              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral-800 to-neutral-800 mix-blend-normal hidden dark:block"></div>
+              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral-800 to-neutral-800 opacity-60 mix-blend-normal hidden dark:block"></div>
             <!-- two gradients go from bottom to top, stack on each other and create nonlinear effect-->
             {{ end }}
           {{ end }}
