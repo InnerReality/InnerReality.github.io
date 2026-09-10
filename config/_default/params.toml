@@ -23,7 +23,7 @@ disableImageOptimizationMD = false
 disableTextInHeader = false
 # backgroundImageWidth = 1200
 
-defaultBackgroundImage = "img/pexels-eberhardgross-34798504.jpg" # light mode background
+defaultBackgroundImage = "img/pexels-annamw-1738675.jpg" # light mode background
 defaultBackgroundImageDark = "img/pexels-eberhardgross-2098428.jpg" # dark mode background
 # defaultFeaturedImage = "IMAGE.jpg" # used as default for featured images in all articles
 # defaultSocialImage = "/android-chrome-512x512.png" # used as default for social media sharing (Open Graph and Twitter)
@@ -40,7 +40,7 @@ giteaDefaultServer = "https://git.fsfe.org"
 forgejoDefaultServer = "https://v11.next.forgejo.org"
 
 [header]
-  layout = "fixed-gradient" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
+  layout = "fixed-fill-blur" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
 
 [footer]
   showMenu = true
@@ -61,8 +61,8 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   showMoreLinkDest = "/blog"
   cardView = true
   cardViewScreenWidth = false
-  layoutBackgroundBlur = true # gradient overlay + scroll blur (light mode)
-  layoutBackgroundBlurDark = false # gradient overlay + scroll blur (dark mode)
+  layoutBackgroundBlur = true # gradient overlay + scroll blur (light mode) - for background-custom
+  layoutBackgroundBlurDark = true # gradient overlay + scroll blur (dark mode) - for background-custom
   disableHeroImageFilter = false # only used when layout equals hero
 
 [article]
@@ -120,7 +120,9 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
 [taxonomy]
   showTermCount = true
   showHero = true
-  heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
+  heroStyle = "thumbAndBackground-custom" # valid options: basic, big, background, thumbAndBackground, thumbAndBackground-custom
+  layoutBackgroundBlur = true
+  layoutBackgroundBlurDark = true
   showBreadcrumbs = false
   showViews = false
   showLikes = false
@@ -129,7 +131,9 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
 
 [term]
   showHero = true
-  heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
+  heroStyle = "thumbAndBackground-custom" # valid options: basic, big, background, thumbAndBackground, thumbAndBackground-custom
+  layoutBackgroundBlur = true
+  layoutBackgroundBlurDark = true
   showBreadcrumbs = false
   showViews = false
   showLikes = false

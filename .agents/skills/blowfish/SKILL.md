@@ -122,6 +122,24 @@ Row 3 (L→R): Step8 → Step9 → Step10 → Done
 - Keep node width ≤ 90px and height 30px for 3-row fits
 - Curved paths: `Q` (quadratic) for smooth row transitions
 
+## Taxonomy Layouts (P:4 F:1)
+
+Taxonomy indexes such as `/tags/` and `/categories/` use the `[taxonomy]` settings, while individual terms such as `/tags/homelab/` use `[term]` in `params.toml`. To reuse a custom light/dark background hero, set both to the custom hero partial:
+
+```toml
+[taxonomy]
+  heroStyle = "thumbAndBackground-custom"
+  layoutBackgroundBlur = true
+  layoutBackgroundBlurDark = true
+
+[term]
+  heroStyle = "thumbAndBackground-custom"
+  layoutBackgroundBlur = true
+  layoutBackgroundBlurDark = true
+```
+
+The shared `layouts/partials/hero/thumbAndBackground-custom.html` partial handles the `terms` and `term` scopes and switches between `defaultBackgroundImage` and `defaultBackgroundImageDark`.
+
 ## Common Config Patterns
 
 ### Adding an external project showcase (P:5 F:3)

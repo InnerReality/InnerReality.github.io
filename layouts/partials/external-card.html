@@ -5,17 +5,22 @@
 {{ $image := .image | default "" }}
 {{ $layout := .layout | default "vertical" }}
 
-{{/* Prefer the linked page's Open Graph description, with the supplied text as fallback. */}}
-{{ $remotePage := try (resources.GetRemote $url) }}
-{{ with $remotePage.Value }}
-  {{ $html := .Content }}
-  {{ $descriptionMatches := findRESubmatch `(?is)<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["'][^>]*>` $html 1 }}
-  {{ if not $descriptionMatches }}
-    {{ $descriptionMatches = findRESubmatch `(?is)<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["'][^>]*>` $html 1 }}
+{{/* Prefer the supplied description, then use the linked page's Open Graph description. */}}
+{{ if not $description }}
+  {{ $remotePage := try (resources.GetRemote $url) }}
+  {{ with $remotePage.Value }}
+    {{ $html := .Content }}
+    {{ $descriptionMatches := findRESubmatch `(?is)<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["'][^>]*>` $html 1 }}
+    {{ if not $descriptionMatches }}
+      {{ $descriptionMatches = findRESubmatch `(?is)<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["'][^>]*>` $html 1 }}
+    {{ end }}
+    {{ with $descriptionMatches }}
+      {{ $description = index (index . 0) 1 }}
+    {{ end }}
   {{ end }}
-  {{ with $descriptionMatches }}
-    {{ $description = index (index . 0) 1 }}
-  {{ end }}
+{{ end }}
+{{ if not $description }}
+  {{ $description = "No description available" }}
 {{ end }}
 
 {{/* Screenshot via thum.io — no encoding needed, raw URL after /get/ */}}
@@ -82,7 +87,7 @@
       </header>
       {{ with $description }}
         <div class="prose dark:prose-invert mt-2 text-neutral-600 dark:text-neutral-400">
-          <p class="text-sm">{{ . }}</p>
+          <p class="text-sm">{{ . | markdownify }}</p>
         </div>
       {{ end }}
       {{ with $tags }}
