@@ -122,6 +122,12 @@ Row 3 (L→R): Step8 → Step9 → Step10 → Done
 - Keep node width ≤ 90px and height 30px for 3-row fits
 - Curved paths: `Q` (quadratic) for smooth row transitions
 
+## Prefer Existing Theme Features (P:5 F:1)
+
+Before adding custom layout or styling logic, inspect the theme’s existing templates, partials, parameters, and JavaScript behavior. Prefer configuring or reusing those features over duplicating them in project layouts. When an override is necessary, keep it narrow and preserve the theme’s established behavior across related page types and appearance modes.
+
+For background and blur changes in particular, compare the homepage, list, taxonomy, and term implementations before editing. Change the layer that owns the behavior—gradient overlays in the page background partial versus scroll blur in the separate blur layer—rather than substituting one for the other.
+
 ## Taxonomy Layouts (P:4 F:1)
 
 Taxonomy indexes such as `/tags/` and `/categories/` use the `[taxonomy]` settings, while individual terms such as `/tags/homelab/` use `[term]` in `params.toml`. To reuse a custom light/dark background hero, set both to the custom hero partial:
