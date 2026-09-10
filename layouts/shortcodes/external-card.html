@@ -1,0 +1,7 @@
+{{ $url := .Get "url" | default "#" }}
+{{ $title := .Get "title" | default "Untitled" }}
+{{ $description := .Get "description" | default "" }}
+{{ $tags := .Get "tags" | default "" }}
+{{ $image := .Get "image" | default "" }}
+
+{{ partial "external-card.html" (dict "url" $url "title" $title "description" $description "tags" $tags "image" $image) }}

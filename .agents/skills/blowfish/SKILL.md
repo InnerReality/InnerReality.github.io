@@ -27,7 +27,7 @@ content/
 assets/img/            # Images referenced by config (backgrounds, author photos)
 ```
 
-## Homepage Layouts
+## Homepage Layouts (P:4 F:4)
 
 Set `homepage.layout` in `params.toml`. Valid options:
 
@@ -37,7 +37,7 @@ Set `homepage.layout` in `params.toml`. Valid options:
 | `hero` | Full-width background image with overlay text |
 | `card` | Two-column: text left, image right |
 | `background` | Background image with content overlay |
-| `background-custom` | Background with custom `_index.md` content |
+| `background-custom` | Background with custom layout partial |
 | `page` | Simple content page |
 
 Key params:
@@ -52,6 +52,45 @@ Key params:
   showMoreLinkDest = "/blog"
   cardView = true
 ```
+
+### How index.html renders homepage (P:5 F:2)
+
+The theme's `layouts/index.html` defines the `main` block and always renders `recent-articles/main.html` **after** the layout partial:
+
+```html
+{{ define "main" }}
+  {{ partial $partial . }}          <!-- your layout partial -->
+  <section>
+    {{ partial "recent-articles/main.html" . }}  <!-- ALWAYS rendered -->
+  </section>
+{{ end }}
+```
+
+**Critical rule:** Custom homepage layouts (e.g. `background-custom.html`) must **not** include `recent-articles/main.html` — the theme already renders it. Doing so causes duplicate panels.
+
+### Custom homepage layout overrides (P:4 F:3)
+
+Place custom layouts at `layouts/partials/home/<layout-name>.html` to override the theme's built-in layouts. Hugo resolves them via the `homepage.layout` param.
+
+## Remote Resources & Security (P:5 F:2)
+
+Hugo blocks `resources.GetRemote` by default. To allow it, add to `config/_default/hugo.toml`:
+
+```toml
+[security.http]
+  methods = ["(?i)GET|POST"]
+  urls = [".*"]
+```
+
+Without this, `resources.GetRemote` silently returns nothing.
+
+### resources.GetRemote gotchas (P:5 F:2)
+
+- `resources.GetRemote` returns a `Resource` object. Call `.Content` to get the HTML string.
+- Do **not** use `try` with chained `.Content` — `try` wraps the result in `template.TryValue` which doesn't expose `.Content`. Assign to a variable first, then `with` that variable.
+- For OG tag extraction from HTML, the attribute order in `<meta>` tags varies. Use two regex passes: one for `property=...content=...` and one for `content=...property=...`.
+- For external link screenshots without build-time fetching, use client-side services like `https://image.thum.io/get/width/800/crop/400/{url}` (no API key needed).
+- `urlize` is for making URL slugs (lowercase, hyphenate) — do **not** use it for URL encoding. Thum.io takes raw URLs.
 
 ## Featured SVGs for Articles (P:4 F:1)
 
@@ -85,15 +124,57 @@ Row 3 (L→R): Step8 → Step9 → Step10 → Done
 
 ## Common Config Patterns
 
-### Adding an external project showcase
+### Adding an external project showcase (P:5 F:3)
 
-1. Set `homepage.layout = "card"` in `params.toml`
-2. Set `homepageImage` to a screenshot in `assets/img/`
-3. Add description and button in `content/_index.md`:
-   ```markdown
-   ## Project Name
-   {{< button href="https://example.com" target="_blank" >}}Visit Site{{< /button >}}
-   ```
+Use the `external-card` partial for reusable external link cards:
+
+```go
+{{ partial "external-card.html" (dict
+  "url" "https://example.com"
+  "title" "Project Name"
+  "description" "A brief description."
+  "tags" "tag1, tag2"
+  "image" ""  /* optional: manual image URL, otherwise thum.io screenshot */
+) }}
+```
+
+Or use the shortcode in markdown content:
+```markdown
+{{</* external-card
+  url="https://example.com"
+  title="Project Name"
+  description="A brief description."
+  tags="tag1, tag2"
+*/>}}
+```
+
+Files:
+- `layouts/partials/external-card.html` — the card partial
+- `layouts/shortcodes/external-card.html` — shortcode wrapper
+
+The partial supports `layout="vertical"` (default) and `layout="horizontal"`:
+
+```go
+{{ partial "external-card.html" (dict
+  "url" "https://example.com"
+  "title" "Project Name"
+  "layout" "horizontal"
+) }}
+```
+
+For custom horizontal card sizing, prefer explicit CSS dimensions and an explicit row/column media-query fallback. Responsive Tailwind utilities may not be present in the theme's compiled CSS, so classes such as `sm:flex-row` or `sm:w-1/3` should not be the only source of layout behavior.
+
+### Conditional section rendering (P:3 F:2)
+
+Wrap optional homepage sections in conditionals to avoid empty `<section>` wrappers:
+
+```html
+{{ if .Site.Params.homepage.showResearch | default false }}
+<section>
+  {{ partial "research-projects/main.html" . }}
+</section>
+{{ end }}
+```
 
 ### Menu structure
 

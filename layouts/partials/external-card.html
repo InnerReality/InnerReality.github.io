@@ -1,0 +1,97 @@
+{{ $url := .url | default "#" }}
+{{ $title := .title | default "Untitled" }}
+{{ $description := .description | default "" }}
+{{ $tags := .tags | default "" }}
+{{ $image := .image | default "" }}
+{{ $layout := .layout | default "vertical" }}
+
+{{/* Prefer the linked page's Open Graph description, with the supplied text as fallback. */}}
+{{ $remotePage := try (resources.GetRemote $url) }}
+{{ with $remotePage.Value }}
+  {{ $html := .Content }}
+  {{ $descriptionMatches := findRESubmatch `(?is)<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["'][^>]*>` $html 1 }}
+  {{ if not $descriptionMatches }}
+    {{ $descriptionMatches = findRESubmatch `(?is)<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["'][^>]*>` $html 1 }}
+  {{ end }}
+  {{ with $descriptionMatches }}
+    {{ $description = index (index . 0) 1 }}
+  {{ end }}
+{{ end }}
+
+{{/* Screenshot via thum.io — no encoding needed, raw URL after /get/ */}}
+{{ $finalImage := $image }}
+{{ if not $image }}
+  {{ $finalImage = printf "https://image.thum.io/get/width/800/crop/400/%s" $url }}
+{{ end }}
+
+{{ if eq $layout "horizontal" }}
+<style>
+  .external-card-horizontal { display: flex; flex-direction: row; }
+  .external-card-horizontal-image { width: 9rem !important; flex: 0 0 11rem !important; min-height: 15rem; }
+  .external-card-horizontal-content { width: auto !important; flex: 1 1 auto !important; }
+  @media (max-width: 639px) {
+    .external-card-horizontal { flex-direction: column; }
+    .external-card-horizontal-image { width: 100% !important; flex: 0 0 auto !important; }
+    .external-card-horizontal-content { width: 100% !important; flex: 0 0 100% !important; }
+  }
+</style>
+<div class="mx-auto my-8" style="width: 100%; max-width: 32rem;">
+  <article class="external-card-horizontal article-link--card group relative overflow-hidden rounded-lg border border-neutral-300/80 bg-white/60 backdrop-blur-xl dark:border-neutral-600/80 dark:bg-neutral-900/50" style="min-height: 15rem;">
+    {{ if $finalImage }}
+      <div class="external-card-horizontal-image relative h-48 shrink-0 overflow-hidden bg-neutral-200 dark:bg-neutral-800" style="min-height: 10rem;">
+        <img
+          src="{{ $finalImage }}"
+          alt="{{ $title }}"
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
+          class="nozoom not-prose absolute inset-0 block h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]">
+      </div>
+    {{ end }}
+    <div class="external-card-horizontal-content relative z-10 min-w-0 bg-white/90 p-5 dark:bg-neutral-900/90 sm:p-6">
+{{ else }}
+<div class="mx-auto my-8" style="width: 100%; max-width: 22rem;">
+  <article class="article-link--card group relative overflow-hidden rounded-lg border border-neutral-300/80 bg-white/60 backdrop-blur-xl dark:border-neutral-600/80 dark:bg-neutral-900/50">
+    {{ if $finalImage }}
+      <div class="relative w-full overflow-hidden bg-neutral-200 dark:bg-neutral-800" style="height: 15rem;">
+        <img
+          src="{{ $finalImage }}"
+          alt="{{ $title }}"
+          loading="lazy"
+          decoding="async"
+          fetchpriority="low"
+          class="nozoom not-prose relative block h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]">
+      </div>
+    {{ end }}
+    <div class="p-6">
+{{ end }}
+      <header>
+        <a
+          href="{{ $url }}"
+          target="_blank"
+          rel="external noopener noreferrer"
+          class="not-prose before:absolute before:inset-0 decoration-primary-500 dark:text-neutral text-xl font-bold text-neutral-800 hover:underline hover:underline-offset-2">
+          <h2>
+            {{ $title }}
+            <span class="cursor-default align-top text-xs text-neutral-400 dark:text-neutral-500">
+              <span class="rtl:hidden">&#8599;</span>
+              <span class="ltr:hidden">&#8598;</span>
+            </span>
+          </h2>
+        </a>
+      </header>
+      {{ with $description }}
+        <div class="prose dark:prose-invert mt-2 text-neutral-600 dark:text-neutral-400">
+          <p class="text-sm">{{ . }}</p>
+        </div>
+      {{ end }}
+      {{ with $tags }}
+        <div class="mt-4 flex flex-wrap gap-2">
+          {{ range $tag := split . "," }}
+            {{ partial "keyword.html" (dict "text" (trim $tag " ")) }}
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </article>
+</div>

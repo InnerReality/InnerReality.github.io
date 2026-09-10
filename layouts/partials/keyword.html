@@ -1,0 +1,12 @@
+{{- $icon := .icon | default "" -}}
+<div class="flex mt-2">
+  <span
+    class="rounded-full bg-primary-500 dark:bg-primary-400 text-neutral-50 dark:text-neutral-800 px-1.5 py-[1px] text-xs font-semibold">
+    <span class="flex flex-row items-center">
+      {{- with $icon -}}
+        <span class="mr-1">{{ partial "icon" . }}</span>
+      {{- end -}}
+      <span>{{ .text }}</span>
+    </span>
+  </span>
+</div>

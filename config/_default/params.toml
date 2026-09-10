@@ -23,7 +23,8 @@ disableImageOptimizationMD = false
 disableTextInHeader = false
 # backgroundImageWidth = 1200
 
-defaultBackgroundImage = "img/pexels-eberhardgross-2098428.jpg" # used as default for background images
+defaultBackgroundImage = "img/pexels-eberhardgross-34798504.jpg" # light mode background
+defaultBackgroundImageDark = "img/pexels-eberhardgross-2098428.jpg" # dark mode background
 # defaultFeaturedImage = "IMAGE.jpg" # used as default for featured images in all articles
 # defaultSocialImage = "/android-chrome-512x512.png" # used as default for social media sharing (Open Graph and Twitter)
 hotlinkFeatureImage = false
@@ -39,7 +40,7 @@ giteaDefaultServer = "https://git.fsfe.org"
 forgejoDefaultServer = "https://v11.next.forgejo.org"
 
 [header]
-  layout = "fixed-fill-blur" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
+  layout = "fixed-gradient" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
 
 [footer]
   showMenu = true
@@ -51,15 +52,17 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
 [homepage]
   layout = "background-custom" # valid options: page, profile, hero, card, background, custom
   #homepageImage = "IMAGE.jpg" # used in: hero, and card
+  layoutSwitcher=false #toggle for switching layouts during preview
   showRecent = true
-  showRecentItems = 5
+  showRecentItems = 3
   showResearch = false
-  showResearchItems = 5
+  showResearchItems = 3
   showMoreLink = true
   showMoreLinkDest = "/blog"
   cardView = true
   cardViewScreenWidth = false
-  layoutBackgroundBlur = false # only used when layout equals background
+  layoutBackgroundBlur = true # gradient overlay + scroll blur (light mode)
+  layoutBackgroundBlurDark = false # gradient overlay + scroll blur (dark mode)
   disableHeroImageFilter = false # only used when layout equals hero
 
 [article]
@@ -71,8 +74,8 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   showAuthor = true
   # showAuthorBottom = false
   showHero = true
-  heroStyle = "thumbAndBackground" # valid options: basic, big, background, thumbAndBackground
-  layoutBackgroundBlur = false # only used when heroStyle equals background or thumbAndBackground
+  heroStyle = "thumbAndBackground-custom" # valid options: basic, big, background, thumbAndBackground
+  layoutBackgroundBlur = true # gradient overlay + scroll blur
   layoutBackgroundHeaderSpace = true # only used when heroStyle equals background
   showBreadcrumbs = false
   showDraftLabel = true
@@ -95,9 +98,9 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   showZenMode = false
 
 [list]
-  showHero = false
-  # heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
-  layoutBackgroundBlur = false # only used when heroStyle equals background or thumbAndBackground
+  showHero = true
+  heroStyle = "thumbAndBackground-custom" # valid options: basic, big, background, thumbAndBackground
+  layoutBackgroundBlur = true # only used when heroStyle equals background or thumbAndBackground
   layoutBackgroundHeaderSpace = true # only used when heroStyle equals background
   showBreadcrumbs = false
   showSummary = false

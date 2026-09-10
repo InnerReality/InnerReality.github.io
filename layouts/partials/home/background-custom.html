@@ -1,7 +1,7 @@
 {{ $disableImageOptimization := .Site.Params.disableImageOptimization | default false }}
 <article class="prose dark:prose-invert max-w-full">
   <div class="relative">
-    <div class="absolute inset-x-0 bottom-0 h-1/2"></div>
+    <div class="absolute inset-x-0 bo   ttom-0 h-1/2"></div>
     <div class="mx-auto max-w-7xl p-0">
       <div class="relative sm:overflow-hidden">
         <div class="fixed inset-x-0 top-0 -z-10">
@@ -29,16 +29,47 @@
             {{ with $.Params.imagePosition | default $defaultPosition }}
               {{ $style = printf "object-position: %s;" . }}
             {{ end }}
+            {{ $homepageImageDark := "" }}
+            {{ with site.Params.defaultBackgroundImageDark }}
+              {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
+                {{ $homepageImageDark = resources.GetRemote . }}
+              {{ else }}
+                {{ $homepageImageDark = resources.Get . }}
+              {{ end }}
+            {{ end }}
+            {{ if $homepageImageDark }}
+            <img
+              id="background-image"
+              class="nozoom mt-0 mr-0 mb-0 ml-0 h-[1000px] w-full object-cover dark:hidden"
+              src="{{ $homepageImage.RelPermalink }}"
+              role="presentation"
+              {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
+            <img
+              id="background-image-dark"
+              class="nozoom mt-0 mr-0 mb-0 ml-0 h-[1000px] w-full object-cover hidden dark:block"
+              src="{{ $homepageImageDark.RelPermalink }}"
+              role="presentation"
+              {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
+            {{ else }}
             <img
               id="background-image"
               class="nozoom mt-0 mr-0 mb-0 ml-0 h-[1000px] w-full object-cover"
               src="{{ $homepageImage.RelPermalink }}"
               role="presentation"
               {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
+            {{ end }}
+            {{ if .Site.Params.homepage.layoutBackgroundBlur | default false }}
             <div
-              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-transparent mix-blend-normal dark:from-neutral-800"></div>
+              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-transparent mix-blend-normal dark:hidden"></div>
             <div
-              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-neutral-100 opacity-60 mix-blend-normal dark:from-neutral-800 dark:to-neutral-800"></div>
+              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-neutral-100 opacity-50 mix-blend-normal dark:hidden"></div>
+            {{ end }}
+            {{ if .Site.Params.homepage.layoutBackgroundBlurDark | default false }}
+            <div
+              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral-800 to-transparent mix-blend-normal hidden dark:block"></div>
+            <div
+              class="absolute inset-0 h-[1000px] bg-gradient-to-t from-neutral-800 to-neutral-800 opacity-60 mix-blend-normal hidden dark:block"></div>
+            {{ end }}
           {{ end }}
         </div>
         <div class="relative flex flex-col items-center justify-center px-1 py-1 text-center">
@@ -96,18 +127,24 @@
     </div>
   </div>
 </article>
-<!-- -->
+
+<h2 class="mx-auto mt-10 mb-4 max-w-2xl text-center text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+ Featured Project
+</h2>
+
+{{ partial "external-card.html" (dict "url" "https://innerreality.github.io/RockingDynamicsSite/" "title" "Rocking Dynamics" "description" "Interactive mechanics research exploring how rigid bodies rock on rigid bases — from geometry through dynamics with real-time browser simulations." "tags" "seismic engineering, interactive simulations" "image" "https://innerreality.github.io/RockingDynamicsSite/assets/minaccel-default-4x.gif"
+"layout" "horizontal") }}
+
+{{ if .Site.Params.homepage.showResearch | default false }}
 <section>
   {{ partial "research-projects/main.html" . }}
 </section>
-<!-- -->
-<section>
-  {{ partial "recent-articles/main.html" . }}
-</section>
+{{ end }}
+
 {{ if .Site.Params.homepage.layoutBackgroundBlur | default false }}
   <div
     id="background-blur"
-    class="fixed opacity-0 inset-x-0 top-0 h-full single_hero_background nozoom backdrop-blur-2xl"></div>
+    class="fixed opacity-0 inset-x-0 top-0 h-full single_hero_background nozoom backdrop-blur-lg"></div>
   {{ $backgroundBlur := resources.Get "js/background-blur.js" }}
   {{ $backgroundBlur = $backgroundBlur | resources.Minify | resources.Fingerprint (.Site.Params.fingerprintAlgorithm | default "sha512") }}
   <script
