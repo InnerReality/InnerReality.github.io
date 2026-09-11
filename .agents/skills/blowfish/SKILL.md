@@ -146,7 +146,7 @@ Taxonomy indexes such as `/tags/` and `/categories/` use the `[taxonomy]` settin
 
 The shared `layouts/partials/hero/thumbAndBackground-custom.html` partial handles the `terms` and `term` scopes and switches between `defaultBackgroundImage` and `defaultBackgroundImageDark`.
 
-## Common Config Patterns
+## Common Config Patterns (P:3 F:1)
 
 ### Adding an external project showcase (P:5 F:3)
 
@@ -224,7 +224,38 @@ Wrap optional homepage sections in conditionals to avoid empty `<section>` wrapp
   weight = 20
 ```
 
-## Shortcodes
+## Shortcodes (P:3 F:1)
+
+### PDF Viewer
+
+Renders a PDF with zoom, scroll, and page navigation controls using PDF.js.
+
+Files:
+- `layouts/partials/pdf-viewer.html` — the viewer partial
+- `layouts/shortcodes/pdf-viewer.html` — shortcode wrapper
+
+**Usage:**
+```markdown
+{{< pdf-viewer src="/resume/resume.pdf" >}}
+{{< pdf-viewer src="/resume/resume.pdf" width="1200px" height="600px" >}}
+```
+
+**Parameters:**
+| Param | Default | Description |
+|-------|---------|-------------|
+| `src` | (required) | Path to PDF file (place in `static/`) |
+| `width` | `960px` | Viewer width |
+| `height` | `800px` | Viewer height |
+
+**Features:**
+- Page navigation (Prev/Next buttons, page input)
+- Zoom in/out with +/- buttons
+- Fit Width / Fit Page buttons
+- Scroll through all pages
+- High-DPI rendering via devicePixelRatio
+- Dark mode support
+
+**Important:** Hugo escapes HTML entities in templates — use plain text labels (Prev, Next) not unicode arrows.
 
 | Shortcode | Usage |
 |-----------|-------|
@@ -235,3 +266,4 @@ Wrap optional homepage sections in conditionals to avoid empty `<section>` wrapp
 | `{{< alert >}}` | Warning/info callout |
 | `{{< mermaid >}}` | Mermaid diagram |
 | `{{< youtubeLite id="ID" >}}` | Lazy YouTube embed |
+| `{{< pdf-viewer src="URL" width="960px" height="800px" >}}` | PDF viewer with zoom/scroll controls |

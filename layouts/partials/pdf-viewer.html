@@ -1,0 +1,159 @@
+{{/* PDF Viewer Partial
+     Usage: {{ partial "pdf-viewer.html" (dict "src" "/path/to/file.pdf" "width" "900px" "height" "795px") }}
+*/}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+
+<div class="pdf-viewer-container my-8 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900" style="width: {{ with .width }}{{ . }}{{ else }}820px{{ end }};" data-src="{{ .src }}">
+  <div class="flex items-center justify-between gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
+    <div class="flex items-center gap-2">
+      <button class="pdf-prev px-2 py-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-50" disabled>Prev</button>
+      <span class="text-sm text-neutral-700 dark:text-neutral-300">
+        Page <input type="number" class="pdf-page-input w-12 px-1 py-0.5 text-center border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300" value="1" min="1"> / <span class="pdf-total-pages">0</span>
+      </span>
+      <button class="pdf-next px-2 py-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-50" disabled>Next</button>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="pdf-zoom-out px-2 py-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300">-</button>
+      <span class="pdf-zoom-level text-sm text-neutral-700 dark:text-neutral-300 w-12 text-center">100%</span>
+      <button class="pdf-zoom-in px-2 py-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300">+</button>
+      <button class="pdf-fit-width px-2 py-1 text-sm rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300">Fit Width</button>
+      <button class="pdf-fit-page px-2 py-1 text-sm rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300">Fit Page</button>
+    </div>
+  </div>
+  <div class="pdf-canvas-container overflow-auto flex flex-col items-center gap-4 p-4" style="height: {{ with .height }}{{ . }}{{ else }}800px{{ end }};"></div>
+</div>
+
+<style>
+  .pdf-viewer-container .pdf-canvas-container::-webkit-scrollbar { width: 8px; height: 8px; }
+  .pdf-viewer-container .pdf-canvas-container::-webkit-scrollbar-track { background: transparent; }
+  .pdf-viewer-container .pdf-canvas-container::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+  .pdf-viewer-container .pdf-canvas-container::-webkit-scrollbar-thumb:hover { background: #555; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.pdf-viewer-container').forEach(function(container) {
+    const src = container.dataset.src;
+    const prevBtn = container.querySelector('.pdf-prev');
+    const nextBtn = container.querySelector('.pdf-next');
+    const pageInput = container.querySelector('.pdf-page-input');
+    const totalPages = container.querySelector('.pdf-total-pages');
+    const zoomIn = container.querySelector('.pdf-zoom-in');
+    const zoomOut = container.querySelector('.pdf-zoom-out');
+    const zoomLevel = container.querySelector('.pdf-zoom-level');
+    const fitWidthBtn = container.querySelector('.pdf-fit-width');
+    const fitPageBtn = container.querySelector('.pdf-fit-page');
+    const canvasContainer = container.querySelector('.pdf-canvas-container');
+
+    let pdfDoc = null;
+    let pageNum = 1;
+    let scale = 1;
+    const SCALE_STEP = 0.25;
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 4;
+    const pageCanvases = [];
+
+    function renderAllPages() {
+      canvasContainer.innerHTML = '';
+      pageCanvases.length = 0;
+      const dpr = window.devicePixelRatio || 1;
+
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        (function(pn) {
+          pdfDoc.getPage(pn).then(function(page) {
+            let viewport = page.getViewport({ scale: scale });
+            let cvs = document.createElement('canvas');
+            cvs.className = 'pdf-page-canvas';
+            cvs.height = viewport.height * dpr;
+            cvs.width = viewport.width * dpr;
+            cvs.style.height = viewport.height + 'px';
+            cvs.style.width = viewport.width + 'px';
+            cvs.style.background = 'white';
+            cvs.dataset.page = pn;
+            let c = cvs.getContext('2d');
+            c.setTransform(dpr, 0, 0, dpr, 0, 0);
+            page.render({ canvasContext: c, viewport: viewport });
+            pageCanvases[pn] = cvs;
+            canvasContainer.appendChild(cvs);
+          });
+        })(i);
+      }
+
+      totalPages.textContent = pdfDoc.numPages;
+      zoomLevel.textContent = Math.round(scale * 100) + '%';
+      updatePageFromScroll();
+    }
+
+    function updatePageFromScroll() {
+      const containerRect = canvasContainer.getBoundingClientRect();
+      let currentPage = 1;
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        if (pageCanvases[i]) {
+          const rect = pageCanvases[i].getBoundingClientRect();
+          if (rect.top <= containerRect.top + containerRect.height / 3) {
+            currentPage = i;
+          }
+        }
+      }
+      pageNum = currentPage;
+      pageInput.value = pageNum;
+      prevBtn.disabled = (pageNum <= 1);
+      nextBtn.disabled = (pageNum >= pdfDoc.numPages);
+    }
+
+    function scrollToPage(num) {
+      if (pageCanvases[num]) {
+        pageCanvases[num].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    prevBtn.addEventListener('click', function() {
+      if (pageNum > 1) { pageNum--; pageInput.value = pageNum; scrollToPage(pageNum); }
+    });
+
+    nextBtn.addEventListener('click', function() {
+      if (pageNum < pdfDoc.numPages) { pageNum++; pageInput.value = pageNum; scrollToPage(pageNum); }
+    });
+
+    pageInput.addEventListener('change', function() {
+      let val = parseInt(this.value, 10);
+      if (val >= 1 && val <= pdfDoc.numPages) { pageNum = val; scrollToPage(pageNum); }
+      else { this.value = pageNum; }
+    });
+
+    canvasContainer.addEventListener('scroll', updatePageFromScroll);
+
+    zoomIn.addEventListener('click', function() {
+      if (scale < MAX_SCALE) { scale = Math.min(scale + SCALE_STEP, MAX_SCALE); renderAllPages(); }
+    });
+
+    zoomOut.addEventListener('click', function() {
+      if (scale > MIN_SCALE) { scale = Math.max(scale - SCALE_STEP, MIN_SCALE); renderAllPages(); }
+    });
+
+    fitWidthBtn.addEventListener('click', function() {
+      pdfDoc.getPage(1).then(function(page) {
+        let viewport = page.getViewport({ scale: 1 });
+        scale = canvasContainer.clientWidth / viewport.width;
+        renderAllPages();
+      });
+    });
+
+    fitPageBtn.addEventListener('click', function() {
+      pdfDoc.getPage(1).then(function(page) {
+        let viewport = page.getViewport({ scale: 1 });
+        scale = canvasContainer.clientHeight / viewport.height;
+        renderAllPages();
+      });
+    });
+
+    pdfjsLib.getDocument(src).promise.then(function(pdf) {
+      pdfDoc = pdf;
+      renderAllPages();
+    });
+  });
+});
+</script>
